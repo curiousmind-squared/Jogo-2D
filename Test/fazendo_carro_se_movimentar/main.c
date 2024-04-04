@@ -1,5 +1,6 @@
-#include <GL/glut.h>
+#include <GL/gl.h>
 #include <math.h>
+#include <GL/glut.h>
 
 #include <stdio.h> // Apenas para fins de testes
 
@@ -7,6 +8,9 @@
 
 int frameNumber=0;
 int circle_points = 100;
+
+float squareX = 0.0f; // Square's X position
+float speedX = 0.01f; // Speed of movement
 int sentido = 1.0;
 
 float dark_green[3] = {1.0/255.0, 50.0/255.0, 32.0/255.0};
@@ -41,7 +45,9 @@ void init(void)
   // define o sistema de visualização - tipo de projeção
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity();
-  glOrtho (-10, 10, -4, 10, -10, 10); // TODO: Resolve como projetar a tela da forma correta, sem deixar espaços
+  glOrtho (-10, 10, -4, 10, -10, 10);
+  //glOrtho (-50, 50, -4, 10, -10, 10); // Apenas para fins de testes -> Vemos uma imagem maior assim e podemos diagnosticar que o carro estava realmente saindo dos limites da visualização 
+
 }
 
 void circulo(int nPonto) {
@@ -283,7 +289,7 @@ void display() {
 
   // Animação e posicionamento do carro
   glPushMatrix();
-  glTranslated(-5.8 + (float) frameNumber/20 * sentido, -1, 0);
+  glTranslated( (float) frameNumber/20 * sentido, -1, 0);
   carro();
   glPopMatrix();
 
@@ -336,3 +342,4 @@ int main(int argc, char** argv)
   return 0;
 
 }
+

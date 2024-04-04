@@ -1,3 +1,6 @@
+-> Eu tentei entender a dinamica do carro mas não dá para ficar para sempre aqui.
+   O próximo passo é começar a escrever o cenário e toda a dinâmica dele
+
 . O jogo é só o personagem se movendo como no jogo do google chrome quando está sem internet 
 . Voce vai apra frente e para tras mas o cenario continua se movendo, o limite seria o final do desenho do cenario naquele momento
 . O cenário que irá se movimentar, não o carro 
@@ -9,6 +12,3 @@
 	-> Sol
 	-> Àrvores (pode ser a partir daquele desenho que você fez em uma aula)
 	-> Casas
-
-. Descobrir como fazer reconhecer que as teclas "setas" foram
-  pressionadas -> Não precisa, só utilizar as teclas gerais
