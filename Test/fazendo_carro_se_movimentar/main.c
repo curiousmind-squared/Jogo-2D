@@ -300,6 +300,9 @@ void keyboard(unsigned char key, int x, int y) {
 		case 'd':
 			printf("d foi pressionada\nMovimento para a direita\n");
 			break;
+		case GLUT_KEY_UP:
+			printf("A tecla para cima foi pressionanda\n");
+			break;
 	}
 	display();
 }
