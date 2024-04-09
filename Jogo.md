@@ -16,6 +16,6 @@
 - É um carro
 - Ao trocar de sentido, a parte da frente do carro também troca o sentido que aponta
 - Se move através de uma estrada
-- Deve pular por cima de buracos e pedras
+- Deve pular por cima de buracos, pedras e fogueiras
 
 

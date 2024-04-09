@@ -295,11 +295,7 @@ void display() {
 
   // Animação e posicionamento do carro
   glPushMatrix();
-<<<<<<< HEAD
   glTranslated(-5.8 + (float) carroNumber/20, -1, 0);
-=======
-  glTranslated( (float) frameNumber/20 * sentido, -1, 0);
->>>>>>> origin/main
   carro();
   glPopMatrix();
 
