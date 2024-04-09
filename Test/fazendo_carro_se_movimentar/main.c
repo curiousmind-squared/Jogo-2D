@@ -1,11 +1,17 @@
 #include <GL/glut.h>
 #include <math.h>
 
-#include <stdio.h> // Apenas para fins de testes
+// Apenas para fins de testes
+#include <stdio.h> 
+#include <stdbool.h>
 
 #define DOUBLE_PI 2*M_PI
 
+bool sentido_carro = false;
+
 int frameNumber=0;
+int carroNumber=0;
+
 int circle_points = 100;
 int sentido = 1.0;
 
@@ -145,7 +151,7 @@ void carro() {
   glPushMatrix();
   glTranslated(-1.5, -0.4, 0);
   glScaled(0.5, 0.5, 1);
-  glRotated(frameNumber*-1, 0, 0, 1);
+  glRotated(carroNumber*-1, 0, 0, 1);
   roda();
   glPopMatrix();
 
@@ -153,7 +159,7 @@ void carro() {
   glPushMatrix();
   glTranslated(-3.5, -0.4, 0);
   glScaled(0.5, 0.5, 1);
-  glRotated(frameNumber*-1, 0, 0, 1);
+  glRotated(carroNumber*-1, 0, 0, 1);
   roda();
   glPopMatrix();
 
@@ -283,7 +289,7 @@ void display() {
 
   // Animação e posicionamento do carro
   glPushMatrix();
-  glTranslated(-5.8 + (float) frameNumber/20 * sentido, -1, 0);
+  glTranslated(-5.8 + (float) carroNumber/20, -1, 0);
   carro();
   glPopMatrix();
 
@@ -295,10 +301,11 @@ void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 		case 'a':
 			printf("a foi pressionada\nMovimento para a esquerda\n");
-			sentido *= -1;
+			sentido_carro = true;
 			break;
 		case 'd':
 			printf("d foi pressionada\nMovimento para a direita\n");
+			sentido_carro= false;
 			break;
 		case GLUT_KEY_UP:
 			printf("A tecla para cima foi pressionanda\n");
@@ -309,6 +316,11 @@ void keyboard(unsigned char key, int x, int y) {
 
 void doFrame(int v) {
 	frameNumber++;
+	if (sentido_carro) {
+		carroNumber--;
+	} else {
+		carroNumber++;
+	}
 	glutPostRedisplay();
 	glutTimerFunc(20, doFrame, 0);
 }
