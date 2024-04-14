@@ -2,9 +2,9 @@
 # Car survival
  *O jogo será dividido em dois tipos de elementos*
  - Elementos que interagem com o personagem
-	 - Buracos
-	 - Pedras
-	 - Fogueiras
+	 - Buracos (Aleatório)
+	 - Pedras (Aleatório)
+	 - Fogueiras (Aleatório)
  - Elementos que não interagem com o personagem
 	 -  Nuvem ( Se move) 
 	 - Casas
