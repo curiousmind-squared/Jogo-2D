@@ -1,6 +1,6 @@
 -> Estrada está pronta e idéia de movimento de um cenário infinto está implementada. 
 Próximos passos:
-	. Permitir que o frame do cenário se mova sozinho, sem o uso do teclado como estamos fazendo atualmente
+	. Permitir que o frame do cenário se mova sozinho, sem o uso do teclado como estamos fazendo atualmente -> DONE
 	. Adicionar carro ao cenário
 	. Adicionar movimento do carro ao cenário:
 		- Tanto o carro se movimentando junto com o cenário
