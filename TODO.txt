@@ -1,14 +1,8 @@
--> Eu tentei entender a dinamica do carro mas não dá para ficar para sempre aqui.
-   O próximo passo é começar a escrever o cenário e toda a dinâmica dele
-
-. O jogo é só o personagem se movendo como no jogo do google chrome quando está sem internet 
-. Voce vai apra frente e para tras mas o cenario continua se movendo, o limite seria o final do desenho do cenario naquele momento
-. O cenário que irá se movimentar, não o carro 
-	[Foto na galeria -> dia 02/04]
-. Fazer as formas que irão aparecer, começar pelas básicas:
-	-> Carro
-	-> Catavento
-	-> Nuvens
-	-> Sol
-	-> Àrvores (pode ser a partir daquele desenho que você fez em uma aula)
-	-> Casas
+-> Estrada está pronta e idéia de movimento de um cenário infinto está implementada. 
+Próximos passos:
+	. Adicionar carro ao cenário
+	. Adicionar movimento do carro ao cenário:
+		- Tanto o carro se movimentando junto com o cenário
+		- Quanto o carro se movento independente, dando assim uma idéia de aceleração
+	. Implementar dinâmica de colisão
+	
