@@ -1,9 +1,12 @@
 -> Estrada está pronta e idéia de movimento de um cenário infinto está implementada. 
 Próximos passos:
 	. Permitir que o frame do cenário se mova sozinho, sem o uso do teclado como estamos fazendo atualmente -> DONE
-	. Adicionar carro ao cenário
+
+	. Adicionar carro ao cenário -> Estamos aqui: em Dev/adicionando_carro_ao_cenario
+
 	. Adicionar movimento do carro ao cenário:
 		- Tanto o carro se movimentando junto com o cenário
 		- Quanto o carro se movento independente, dando assim uma idéia de aceleração
+	
 	. Implementar dinâmica de colisão
 	
