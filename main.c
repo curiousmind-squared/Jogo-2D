@@ -2,25 +2,27 @@
 #include <GL/glut.h>
 #include <stdbool.h>
 
-
 // Para testes
 #include <stdio.h>
 
+// Váriaveis relacionadas às dimensões da tela e do mundo
+int view_desloc_x_begin = -10;
+int view_desloc_x_end   =  10;
 
-// Váriaveis relacionadas ao Frame
-int frameNumber = 0; // Frame number geral 
-int frameNumberCenario = 0; // Frame number para cenário
 
-// Váriaveis booleanas de sistema
-bool cenario_direita=false;
-bool cenario_esquerda=false;
+// Variáveis relacionadas ao Frame
+int frameNumber        = 0; // Frame number geral 
 
+// Variáveis booleanas de sistema
+bool change_superuser = false; // Váriavel que troca para controle do jogo
+bool cenario_direita  = false;
+bool cenario_esquerda = false;
 
 // Cores
-float dark_green[3] = {1.0/255.0, 50.0/255.0, 32.0/255.0};
-float light_blue[3] = {173.0/255.0, 216.0/255.0, 230.0/255.0};
+float dark_green[3]  = {1.0/255.0, 50.0/255.0, 32.0/255.0};
+float light_blue[3]  = {173.0/255.0, 216.0/255.0, 230.0/255.0};
 float light_black[3] = {39.0/255.0, 39.0/255.0, 39.0/255.0};
-float white[3] = {1.0, 1.0, 1.0};
+float white[3]       = {1.0, 1.0, 1.0};
 
 // Funções de desenho de formas
 void quadrado();
@@ -40,7 +42,7 @@ void init(void)
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity();
   
-  glOrtho(-10, 10, -10, 10, -10, 10); // Assim vemos o cenário do usuário
+  glOrtho(view_desloc_x_begin, view_desloc_x_end, -10, 10, -10, 10); // Assim vemos o cenário do usuário
 
   //glOrtho (-100, 100, -10, 10, -10, 10); // Assim vemos o cenário todo do jogo 
 }
@@ -97,8 +99,6 @@ void placas_de_asfalto()
 	asfalto(i*10*-1);
      }
   }
-  
-	
 }
 
 void display() {
@@ -114,20 +114,49 @@ void display() {
 
 void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
-		case 'd':
-			printf("Você apertou d\tCenário para a direita\n");
-			cenario_direita=true;
+		case 'p':
+			if (change_superuser) {
+				printf("Você mudou para modo usuário\n");
+				change_superuser=false;
+			} else {
+				printf("Você mudou para modo superusuário\n");
+				change_superuser=true;
+			}
 			break;
-		case 'a':
-			printf("Você apertou a\tCenário para a esquerda\n");
-			cenario_esquerda=true;
-			break;
+		case 'l':
+		    if (change_superuser) {
+				printf("Você apertou l\tCenário para a direita\n");
+				cenario_direita=true;
+				break;
+			} else {
+				printf("Você é apenas um usário comum, não pode se mover pelo cenário\n");
+				break;
+			}
+		case 'j':
+			if (change_superuser) {
+				printf("Você apertou j\tCenário para a esquerda\n");
+				cenario_esquerda=true;
+				break;
+			} else {
+				printf("Você é apenas um usário comum, não pode se mover pelo cenário\n");
+				break;
+			}
 		case 'q':
-			printf("Você aprtou q\tEstá vendo o cenário todo\n");
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			glOrtho(-100, 100, -10, 10, -10, 10);
-			break;
+		    if (change_superuser) {
+				printf("Você apertou q.\tEstá vendo o cenário todo.\tAlterando variáveis de visualização do mundo\n");
+
+				view_desloc_x_begin = -100;
+				view_desloc_x_end   =  100;
+
+				glMatrixMode(GL_PROJECTION);
+				glLoadIdentity();
+				glOrtho(view_desloc_x_begin, view_desloc_x_end, -10, 10, -10, 10);
+
+				break;
+			} else {
+				printf("Você é apenas um usuário comum, não pode ver o cenário todo\n");
+				break;
+			}
 
 	}
 	display();
@@ -135,37 +164,64 @@ void keyboard(unsigned char key, int x, int y) {
 
 void doFrame(int v) {
 	frameNumber++;
-	if (cenario_direita) {
-		frameNumberCenario += 5;
+	if (change_superuser) {
+		if (cenario_direita) {
+			glMatrixMode (GL_PROJECTION);
+			glLoadIdentity();
+
+			view_desloc_x_begin += 5;
+			view_desloc_x_end   += 5;
+			
+			printf("Tamanho do cenário em x: %d até %d\n", view_desloc_x_begin, view_desloc_x_end);
+			
+			if (view_desloc_x_end >= 100) {
+				printf("Passamos do limite de visualização do usuário, devemos dar a ideia de voltar ao começo para termos ilusão de cenário infinito\n");
+				view_desloc_x_begin = -100;
+				view_desloc_x_end   =  -80;
+
+				glOrtho(view_desloc_x_begin, view_desloc_x_end, -10, 10, -10, 10);			
+				
+			} else {
+				glOrtho(view_desloc_x_begin, view_desloc_x_end, -10, 10, -10, 10);
+			}
+
+			cenario_direita=false;
+		}
+		if (cenario_esquerda) {
+			//frameNumberCenario -= 5;
+			glMatrixMode (GL_PROJECTION);
+			glLoadIdentity();
+
+			view_desloc_x_begin -= 5;
+			view_desloc_x_end   -= 5;		
+
+			printf("Tamanho do cenário em x: %d até %d\n", view_desloc_x_begin, view_desloc_x_end);
+	
+			
+			glOrtho(view_desloc_x_begin, view_desloc_x_end, -10, 10, -10, 10);
+
+
+			cenario_esquerda=false;
+			
+		}
+	} else {
 		glMatrixMode (GL_PROJECTION);
-	 	glLoadIdentity();
+		glLoadIdentity();
+
+		view_desloc_x_begin += 5;
+		view_desloc_x_end   += 5;
 		
-		printf("%d\n", frameNumberCenario);
-		if (frameNumberCenario >= 100) {
+		printf("Tamanho do cenário em x: %d até %d\n", view_desloc_x_begin, view_desloc_x_end);
+
+		if (view_desloc_x_end >= 100) {
 			printf("Passamos do limite de visualização do usuário, devemos dar a ideia de voltar ao começo para termos ilusão de cenário infinito\n");
-			glOrtho(-10, 10, -10, 10, -10, 10);			
-			frameNumberCenario = 0;
+			view_desloc_x_begin = -100;
+			view_desloc_x_end   =  -80;
+			glOrtho(view_desloc_x_begin, view_desloc_x_end, -10, 10, -10, 10);			
 			
 		} else {
-			glOrtho(-10+(frameNumberCenario), 10+frameNumberCenario, -10, 10, -10, 10);
+			glOrtho(view_desloc_x_begin, view_desloc_x_end, -10, 10, -10, 10);
 		}
-
-		cenario_direita=false;
-	}
-	if (cenario_esquerda) {
-		frameNumberCenario -= 5;
-
-		
-		//printf("%d\n", frameNumberCenario);
-		
-		glMatrixMode (GL_PROJECTION);
- 		glLoadIdentity();
-		glOrtho(-10+frameNumberCenario,10+frameNumberCenario, -10, 10, -10, 10);
-
-		//printf("FrameNumber e Tamanho do cenário em x: %d\t %d até %d\n",frameNumberCenario, -10+frameNumberCenario, 10+frameNumberCenario);
-
-		cenario_esquerda=false;
-		
 	}
 
 	glutPostRedisplay();
