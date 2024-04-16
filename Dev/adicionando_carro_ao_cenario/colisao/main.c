@@ -19,17 +19,22 @@ bool cenario_direita  = false;
 bool cenario_esquerda = false;
 
 // Cores
-float dark_green[3]  = {1.0/255.0, 50.0/255.0, 32.0/255.0};
+float dark_green[3]  = {1.0/255.0  , 50.0/255.0 , 32.0/255.0 };
 float light_blue[3]  = {173.0/255.0, 216.0/255.0, 230.0/255.0};
-float light_red[3] = {255.0/255.0, 71.0/255.0, 76.0/255.0};
-float light_black[3] = {39.0/255.0, 39.0/255.0, 39.0/255.0};
-float white[3]       = {1.0, 1.0, 1.0};
+float light_red[3]   = {255.0/255.0, 71.0/255.0 , 76.0/255.0 };
+float light_black[3] = {39.0/255.0 , 39.0/255.0 , 39.0/255.0 };
+float brown[3]       = {205.0/255.0, 127.0/255.0, 50.0/255.0 };
+float white[3]       = {1.0        , 1.0        , 1.0        };
 
 // Funções de desenho de formas
 void quadrado();
 void asfalto(int desloc_x);
 void placas_de_asfalto();
 void carro();
+void pedra();
+
+// Funções de sistema
+void checar_colisao();
 
 // Funções do OpenGl
 void init(void);
@@ -101,12 +106,25 @@ void placas_de_asfalto()
 
 void carro() 
 {
+	int car_x_pos = (view_desloc_x_end + view_desloc_x_begin) / 2; // Carro no meio da tela
+
 	glColor3fv(light_red);
 	glPushMatrix();
-	  glTranslated(-2.5, -4.0, 0);
+	  glTranslated(car_x_pos, -4.0, 0);
 	  glScaled(1.5, 0.5, 1);
 	  quadrado();
 	glPopMatrix();
+}
+
+void pedra() 
+{	
+	int pedra_x_pos = 5.0;
+	glColor3fv(brown);
+	glPushMatrix();
+	  glTranslated(pedra_x_pos, -4.0, 0);
+	  quadrado();
+	glPopMatrix();
+
 }
 
 void display() {
@@ -118,8 +136,26 @@ void display() {
   placas_de_asfalto();
  
   carro();
+
+  pedra();
   
   glutSwapBuffers();
+}
+
+void checar_colisao() {
+	int car_x_pos = (view_desloc_x_end + view_desloc_x_begin) / 2;
+	int pedra_x_pos = 5.0;
+
+	printf("\n\nColisão:\n");
+	printf("Carro em x: %d ; em y: -4.0", car_x_pos);	 
+	printf("\nPonto inferior esquerdo do carro: (%f, -4.25)\t", car_x_pos-1.5);
+	printf("\nPonto superior direito do carro:  (%f, -3.75)\t", car_x_pos+1.5);
+
+	printf("\nPedra em: x: %d ; em y: -4.0", pedra_x_pos);
+	printf("\nPonto inferior esquerdo da pedra: (%d, -5)\t", pedra_x_pos-1);
+	printf("\nPonto superior direito da pedra:  (%d, -3)\t", pedra_x_pos+1);
+
+	printf("\n\n");
 }
 
 void keyboard(unsigned char key, int x, int y) {
@@ -182,6 +218,8 @@ void doFrame(int v) {
 			view_desloc_x_begin += 5;
 			view_desloc_x_end   += 5;
 			
+			checar_colisao();
+
 			printf("Tamanho do cenário em x: %d até %d\n", view_desloc_x_begin, view_desloc_x_end);
 			
 			if (view_desloc_x_end >= 100) {
@@ -204,6 +242,7 @@ void doFrame(int v) {
 
 			view_desloc_x_begin -= 5;
 			view_desloc_x_end   -= 5;		
+			checar_colisao();
 
 			printf("Tamanho do cenário em x: %d até %d\n", view_desloc_x_begin, view_desloc_x_end);
 	
@@ -220,8 +259,10 @@ void doFrame(int v) {
 
 		view_desloc_x_begin += 5;
 		view_desloc_x_end   += 5;
+		checar_colisao();
 		
 		printf("Tamanho do cenário em x: %d até %d\n", view_desloc_x_begin, view_desloc_x_end);
+
 
 		if (view_desloc_x_end >= 100) {
 			printf("Passamos do limite de visualização do usuário, devemos dar a ideia de voltar ao começo para termos ilusão de cenário infinito\n");

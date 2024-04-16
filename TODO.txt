@@ -3,6 +3,8 @@ Próximos passos:
 	. Permitir que o frame do cenário se mova sozinho, sem o uso do teclado como estamos fazendo atualmente -> DONE
 
 	. Adicionar carro ao cenário -> Estamos aqui: em Dev/adicionando_carro_ao_cenario
+	
+	-> Uma nota, se colocarmos "quadrados" ao redor das imagens que queremos testar a colisão, pode ficar mais fácil conseguirmos detectar a colisão -> Por exemplo, o quadrado do carro se estende do carro até a roda, em uma cor que contraste bem (se o carro for vermelho o quadrado será de uma cor azul por exemplo) e se estende do topo do quadrado até a roda, essa é uma dinânimca bem interessante de implementar
 
 	. Adicionar movimento do carro ao cenário:
 		- Tanto o carro se movimentando junto com o cenário
