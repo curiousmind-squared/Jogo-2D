@@ -10,9 +10,9 @@ int view_desloc_x_begin = -10;
 int view_desloc_x_end   =  10;
 
 // Váriaveis relacionas ao carro
-int carr_y_pos = -4.0;
+float carr_y_pos = -4.0;
 float carr_y_vel = 0.0f;
-float gravidade = -0.098f;
+float gravidade = -0.0070;
 
 // Variáveis relacionadas ao Frame
 int frameNumber        = 0; // Frame number geral 
@@ -248,17 +248,14 @@ void doFrame(int v) {
 	}
 
 	if (jump) {
-		carr_y_vel = 0.05;
+		carr_y_vel = 0.2;
 		jump=false;
 	}
 
 	carr_y_pos += carr_y_vel;
 	carr_y_vel += gravidade;
-
-	if (carr_y_pos >= 5.0) {
-		carr_y_pos = -4.0;
-		carr_y_vel = 0.0;
-	}
+	
+	printf("Y pos carro: %f\n", carr_y_pos);
 	if (carr_y_pos <= -4.0) {
 		carr_y_vel = 0;
 		carr_y_pos = -4.0;
