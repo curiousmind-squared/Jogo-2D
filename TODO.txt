@@ -1,4 +1,5 @@
 -> Estrada está pronta e idéia de movimento de um cenário infinto está implementada. 
+-> O CARRO ESTÁ PULANDOOOOOOO
 Próximos passos:
 	. Permitir que o frame do cenário se mova sozinho, sem o uso do teclado como estamos fazendo atualmente -> DONE
 
