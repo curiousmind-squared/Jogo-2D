@@ -1,15 +1,22 @@
+Agora é basicamente:
+	. Arrumar o código
+	. Continuar o jogo 
+
+-> Conseguimos ter dentro do "if" que checa o jump adicionar mais uma condição que não permita múltiplos pulos, se o carro pegar uma moeda especial podemos desmarcar essa opção e deixar
+   o carro pular livremente. 
+-> Estou pensando de termos moedas(que permitem múltiplos pulos) e corações(que adicionam vidas ao personagem)
+
+-> A prioridade agora é adicionar colisões ao cenário -> AS COLISOES ESTAO FUNCIONADOOOOOOOOOOOOOO HAHAAHAHAHAHAHA IHIHIHIHIHIHHIHIHIH
+
+
+
 -> Estrada está pronta e idéia de movimento de um cenário infinto está implementada. 
 -> O CARRO ESTÁ PULANDOOOOOOO
-Próximos passos:
-	. Permitir que o frame do cenário se mova sozinho, sem o uso do teclado como estamos fazendo atualmente -> DONE
 
-	. Adicionar carro ao cenário -> Estamos aqui: em Dev/adicionando_carro_ao_cenario
 	
 	-> Uma nota, se colocarmos "quadrados" ao redor das imagens que queremos testar a colisão, pode ficar mais fácil conseguirmos detectar a colisão -> Por exemplo, o quadrado do carro se estende do carro até a roda, em uma cor que contraste bem (se o carro for vermelho o quadrado será de uma cor azul por exemplo) e se estende do topo do quadrado até a roda, essa é uma dinânimca bem interessante de implementar
 
 	. Adicionar movimento do carro ao cenário:
-		- Tanto o carro se movimentando junto com o cenário
 		- Quanto o carro se movento independente, dando assim uma idéia de aceleração
 	
-	. Implementar dinâmica de colisão
 	
