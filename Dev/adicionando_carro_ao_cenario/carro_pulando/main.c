@@ -233,7 +233,7 @@ void doFrame(int v) {
 		view_desloc_x_begin += 5;
 		view_desloc_x_end   += 5;
 		
-		printf("Tamanho do cenário em x: %d até %d\n", view_desloc_x_begin, view_desloc_x_end);
+		printf("Tamanho do cenário em x: %d até %d\t", view_desloc_x_begin, view_desloc_x_end);
 
 
 		if (view_desloc_x_end >= 100) {
@@ -247,8 +247,10 @@ void doFrame(int v) {
 		}
 	}
 
-	if (jump) {
+	if (jump && carr_y_vel == 0) { 
 		carr_y_vel = 0.2;
+		jump=false;
+	} else if (jump && carr_y_vel != 0) { // Se existir velocidade em y, não permitimos múltiplos pulos (por enquanto, isso irá mudar no futuro)
 		jump=false;
 	}
 
