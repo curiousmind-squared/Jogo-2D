@@ -52,6 +52,8 @@ Point carr_inf_esq = {-1, -1};
 // Por isso não colocamos elas aqui em baixo (Fora que o C também não deixa)
 Quadrado quad_carro = {{-1, 1}, {1, 1}, {1, -1}, {-1, -1}};
 
+float desloc=0; // Deslocamento horizontal do carro
+
 int circle_points = 100;
 
 float carr_scale_x;
@@ -261,7 +263,7 @@ void placas_de_asfalto()
 
 void carro() 
 {
-	float car_x_pos = (view_desloc_x_end + view_desloc_x_begin) / 2; // Carro no meio da tela
+	float car_x_pos = (view_desloc_x_end + view_desloc_x_begin+desloc) / 2; // Carro no meio da tela
 
 	carr_scale_x = 1.5;
 	carr_scale_y = 0.5;
@@ -384,7 +386,7 @@ void display() {
 
 void checar_colisao() 
 {
-	float carr_x_pos = (view_desloc_x_end + view_desloc_x_begin) / 2;
+	float carr_x_pos = (view_desloc_x_end + view_desloc_x_begin+desloc) / 2;
 
 
 	carr_inf_esq.x = carr_x_pos - carr_scale_x;
@@ -490,6 +492,12 @@ void checar_colisao()
 
 void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
+		case 'd':
+			desloc += 1.0;
+			break; 
+		case 'a':
+			desloc -= 1.0;
+			break;
 		case 'w':
 			jump=true;
 			break;
@@ -622,7 +630,7 @@ void doFrame(int v) {
 	if (abs(end_count_poder - begin_count_poder) >= 4) {
 		permite_pular_infinito = false;
 	} else {
-       	printf("Faltam %d\n para seu poder acabar!\n", 3-abs(end_count_poder - begin_count_poder));
+       	printf("\nFaltam %d\n para seu poder acabar!\n", 3-abs(end_count_poder - begin_count_poder));
 	}
 
 	if (jump && carr_y_vel == 0) { 
