@@ -144,7 +144,7 @@ void quadrado()
 }
 
 void quadrado_pedra() {
-	glBegin(GL_POLYGON);
+	glBegin(GL_LINE_LOOP);
 		glVertex3f(-0.5, -0.5, 0);
 		glVertex3f(0.5, -0.5, 0);
 		glVertex3f(0.5, 0.5, 0);
@@ -467,6 +467,18 @@ void desenha_estrela() {
     glEnd();
 }
 
+void desenha_pedra() {
+	glBegin(GL_POLYGON);      // Start drawing the rock
+        glVertex2f(-0.3, -0.1); // Vertices of the rock
+        glVertex2f(-0.4, 0.2);
+        glVertex2f(-0.1, 0.3);
+        glVertex2f(0.2, 0.2);
+        glVertex2f(0.3, -0.1);
+        glVertex2f(0.1, -0.4);
+        glVertex2f(-0.2, -0.3);
+    glEnd();
+}
+
 void display() {
 
   glClear(GL_COLOR_BUFFER_BIT);
@@ -479,7 +491,7 @@ void display() {
   for (int i=0; i<vidas; i++) {
 	float middle = (view_desloc_x_end + view_desloc_x_begin) / 2;
 	glPushMatrix();
-	glTranslated(middle-7+(i+3), 8, 0);
+	glTranslated(middle-12+(i+3), 8, 0);
 	glScaled(0.035, 0.035, 0);
 		glBegin(GL_POLYGON); // Begin drawing the heart shape with filled color
 		for (double t = 0; t < 2 * M_PI; t += 0.001) {
@@ -537,21 +549,33 @@ void display() {
 
  if (perdi_vida_pedra1) {
   glPushMatrix();
-    glTranslated(pedra1_x_pos , -4.0, 0);	
-    quadrado_pedra();
+    glTranslated(pedra1_x_pos , -4.0, 0);
+	glPushMatrix();
+		glScaled(2, 2, 0);
+		desenha_pedra();	
+	glPopMatrix();
+    //quadrado_pedra();
   glPopMatrix();
  } 
   if (perdi_vida_pedra2){
   glPushMatrix();
-    glTranslated(pedra2_x_pos , -4.0, 0);	
-    quadrado_pedra();
+    glTranslated(pedra2_x_pos , -4.0, 0);
+	glPushMatrix();
+		glScaled(2, 2, 0);
+		desenha_pedra();	
+	glPopMatrix();	
+    //quadrado_pedra();
   glPopMatrix();
   }
   
   if (perdi_vida_pedra3){
   glPushMatrix();
     glTranslated(pedra3_x_pos , -4.0, 0);	
-    quadrado_pedra();
+	glPushMatrix();
+		glScaled(2, 2, 0);
+		desenha_pedra();	
+	glPopMatrix();
+    //quadrado_pedra();
   glPopMatrix();
   }
   
@@ -644,7 +668,7 @@ void checar_colisao()
 					exit(0);
 				}
 				perdi_vida_pedra1 = false;
-				printf("Voce tem %d vidas restantes\n", vidas);
+				//printf("Voce tem %d vidas restantes\n", vidas);
 			}
 	}
 	
@@ -663,7 +687,7 @@ void checar_colisao()
 					exit(0);
 				}
 				perdi_vida_pedra2 = false;
-				printf("Voce tem %d vidas restantes\n", vidas);
+				//printf("Voce tem %d vidas restantes\n", vidas);
 			}
 	}
 
@@ -682,7 +706,7 @@ void checar_colisao()
 					exit(0);
 				}
 				perdi_vida_pedra3 = false;
-				printf("Voce tem %d vidas restantes\n", vidas);
+				//printf("Voce tem %d vidas restantes\n", vidas);
 			}
 	}
 	
@@ -695,8 +719,8 @@ void checar_colisao()
 			if(ganhou_vida_vida1) {
 				vidas += 1;
 				ganhou_vida_vida1 = false;
-				printf("Voce ganhou uma vida\n");
-				printf("Voce tem %d vidas restantes\n", vidas);
+				//printf("Voce ganhou uma vida\n");
+				//printf("Voce tem %d vidas restantes\n", vidas);
 			}
 	}
 
@@ -709,7 +733,7 @@ void checar_colisao()
 			if(poder_pular) {
 				permite_pular_infinito = true;
 				poder_pular = false;
-				printf("Voce ganhou o poder de pular!!\n");
+				//printf("Voce ganhou o poder de pular!!\n");
 				begin_count_poder = time(NULL);
 			}
 	}
@@ -843,7 +867,7 @@ void doFrame(int v) {
 			poder_pular = true;
 
 
-			printf("-------------------- SUAS VIDAS: %d --------------------\n", vidas);
+			//printf("-------------------- SUAS VIDAS: %d --------------------\n", vidas);
 			//printf("Passamos do limite de visualização do usuário, devemos dar a ideia de voltar ao começo para termos ilusão de cenário infinito\n");
 			view_desloc_x_begin = -120;
 			view_desloc_x_end   = -100;
