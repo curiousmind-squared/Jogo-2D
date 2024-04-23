@@ -105,7 +105,8 @@ void keyboard(unsigned char key, int x, int y);
 
 void init(void)
 {
-  glClearColor(1.0, 1.0, 1.0, 1.0);
+  // define a cor de background da janela
+  glClearColor(light_blue[0], light_blue[1], light_blue[2], 1.0);
 
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity();
