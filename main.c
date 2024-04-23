@@ -211,7 +211,6 @@ void roda() {
 	glEnd();
 }
 
-
 void quadrado_carro() 
 {
  glBegin(GL_LINE_LOOP);
@@ -311,14 +310,63 @@ void carro()
 	glPopMatrix();
 }
 
+void chao_verde() {
+	// Parte preta do asfalto
+	glColor3fv(dark_green);
+	glBegin(GL_POLYGON);
+		glVertex3f(-120, 0, 0);
+		glVertex3f(120,  0, 0);
+		glVertex3f(120,  -10, 0);
+		glVertex3f(-120, -10, 0);
+	glEnd();
+}
+
+void sol() {
+	int num_of_lines = 12;
+	int circle_points = 100;  
+
+	glColor3f(1, 0.75, 0);
+	glBegin(GL_LINES);
+		for (int i=0; i<num_of_lines; i++) {
+			double angle = DOUBLE_PI * i / num_of_lines;
+			glVertex3f(0, 0, 0);
+			glVertex3f(1.5 * cos(angle) ,
+				   1.5 * sin(angle) ,
+				   0);
+		}
+	glEnd();
+	glColor3f(1, 1, 0);
+	circulo_fechado(circle_points);
+	
+	glColor3f(1, 0.75, 0);			
+	circulo(circle_points);
+}
+
+void posicao_sol() {
+	// Animação e posicionamento do Sol
+	float sol_x_pos = (view_desloc_x_end + view_desloc_x_begin+15) / 2;
+
+	glPushMatrix();
+	glTranslated(sol_x_pos, 8.2, 0);
+	glRotated(frameNumber, 0, 0, 1);
+	sol();
+	glPopMatrix();
+}
+
 void display() {
 
   glClear(GL_COLOR_BUFFER_BIT);
 
   glMatrixMode (GL_MODELVIEW);
 
+  
+
+  chao_verde();
+
+  posicao_sol();
+
   placas_de_asfalto();
- 
+
   carro();
 
   if (gerar_estruturas) {
@@ -375,7 +423,7 @@ void display() {
   glPopMatrix();
 
   // PODER 
-  glColor3fv(light_black);
+  glColor3fv(white);
   glPushMatrix();
     glTranslated(poder1_x_pos , -1.5, 0);	
     quadrado_poder();
@@ -670,9 +718,9 @@ int main(int argc, char** argv)
   glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
 
   glutInitWindowSize (800, 800);
-  glutInitWindowPosition (200, 200);
+  glutInitWindowPosition (900, 50);
 
-  glutCreateWindow ("Testando visualização do cenário");
+  glutCreateWindow ("Carro maluco");
 
   init();
 
