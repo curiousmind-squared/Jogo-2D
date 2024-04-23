@@ -39,6 +39,8 @@ bool ganhou_vida_vida1 = true;
 
 bool poder_pular = true;
 bool permite_pular_infinito = false;
+
+time_t game_count;
 time_t end_count_poder;
 time_t begin_count_poder;
 
@@ -123,6 +125,7 @@ void init(void)
   glLoadIdentity();
 
   gerar_estruturas=true;
+  game_count = time(NULL);
   
   glOrtho(view_desloc_x_begin, view_desloc_x_end, -10, 10, -10, 10); // Assim vemos o cenário do usuário
 }
@@ -446,6 +449,24 @@ void cataventos() {
 
 }
 
+void desenha_estrela() {
+	int numPoints = 5; // Number of points of the star (5-pointed star)
+    double outerRadius = 8.0, innerRadius = 3.0; // Outer and inner radii
+    double angleIncrement = M_PI / numPoints; // Angle increment
+
+    glBegin(GL_TRIANGLE_FAN); // Begin drawing the star
+    glVertex2d(0, 0); // Center point for TRIANGLE_FAN
+
+    for (int i = 0; i <= 2 * numPoints; ++i) {
+        double angle = i * angleIncrement;
+        double radius = (i % 2 == 0) ? outerRadius : innerRadius;
+        double x = radius * sin(angle);
+        double y = radius * cos(angle);
+        glVertex2d(x, y);
+    }
+    glEnd();
+}
+
 void display() {
 
   glClear(GL_COLOR_BUFFER_BIT);
@@ -495,23 +516,30 @@ void display() {
 
   // PEDRAS -> Tiram uma vida
  glColor3fv(brown);
+
+ if (perdi_vida_pedra1) {
   glPushMatrix();
     glTranslated(pedra1_x_pos , -4.0, 0);	
     quadrado_pedra();
   glPopMatrix();
-  
+ } 
+  if (perdi_vida_pedra2){
   glPushMatrix();
     glTranslated(pedra2_x_pos , -4.0, 0);	
     quadrado_pedra();
   glPopMatrix();
+  }
   
+  if (perdi_vida_pedra3){
   glPushMatrix();
     glTranslated(pedra3_x_pos , -4.0, 0);	
     quadrado_pedra();
   glPopMatrix();
+  }
   
   // VIDA	
   glColor3fv(light_red);
+  if (ganhou_vida_vida1){
   glPushMatrix();
     glTranslated(vida1_x_pos , -1.5, 0);
 	glPushMatrix();
@@ -527,12 +555,18 @@ void display() {
     //quadrado_vida();
   glPopMatrix();
 
+  }
+
   // PODER 
   glColor3fv(white);
+  if (poder_pular) {
   glPushMatrix();
-    glTranslated(poder1_x_pos , -1.5, 0);	
+    glTranslated(poder1_x_pos , -1.5, 0);
+	glScaled(0.05, 0.05, 0);
+	desenha_estrela();
     quadrado_poder();
   glPopMatrix();
+  }
 
   glutSwapBuffers();
 }
@@ -584,6 +618,13 @@ void checar_colisao()
 			//printf("------------------------------------------------------- COLISAO -------------------------------------------------------\n");
 			if (perdi_vida_pedra1) {
 				vidas -= 1;
+				if (vidas == 0) {
+					time_t end = time(NULL);
+
+					printf("\n\nVocê PERDEU!\n\n");
+					printf("Sobreviveu por %ld segundos\n", end-game_count);
+					exit(0);
+				}
 				perdi_vida_pedra1 = false;
 				printf("Voce tem %d vidas restantes\n", vidas);
 			}
@@ -596,6 +637,13 @@ void checar_colisao()
 			//printf("------------------------------------------------------- COLISAO -------------------------------------------------------\n");
 			if(perdi_vida_pedra2) {
 				vidas -= 1;
+				if (vidas == 0) {
+					time_t end = time(NULL);
+
+					printf("\n\nVocê PERDEU!\n\n");
+					printf("Sobreviveu por %ld segundos\n", end-game_count);
+					exit(0);
+				}
 				perdi_vida_pedra2 = false;
 				printf("Voce tem %d vidas restantes\n", vidas);
 			}
@@ -608,6 +656,13 @@ void checar_colisao()
 			//printf("------------------------------------------------------- COLISAO -------------------------------------------------------\n");
 			if(perdi_vida_pedra3) {
 				vidas -= 1;
+				if (vidas == 0) {
+					time_t end = time(NULL);
+
+					printf("\n\nVocê PERDEU!\n\n");
+					printf("Sobreviveu por %ld segundos\n", end-game_count);
+					exit(0);
+				}
 				perdi_vida_pedra3 = false;
 				printf("Voce tem %d vidas restantes\n", vidas);
 			}
@@ -786,9 +841,7 @@ void doFrame(int v) {
 	end_count_poder = time(NULL);
 	if (abs(end_count_poder - begin_count_poder) >= 4) {
 		permite_pular_infinito = false;
-	} else {
-       	printf("\nFaltam %d\n para seu poder acabar!\n", 3-abs(end_count_poder - begin_count_poder));
-	}
+	} 
 
 	if (jump && carr_y_vel == 0) { 
 		carr_y_vel = 0.2;
