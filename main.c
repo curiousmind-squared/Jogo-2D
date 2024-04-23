@@ -33,6 +33,7 @@ int vidas = 10;
 bool perdi_vida_pedra1 = true;
 bool perdi_vida_pedra2 = true;
 bool perdi_vida_pedra3 = true;
+bool ganhou_vida_vida1 = true;
 
 
 
@@ -53,11 +54,13 @@ float carr_y_pos = -4.0;
 float carr_y_vel = 0.0f;
 float gravidade = -0.0070;
 
-Point pedras[5];
 
 int pedra1_x_pos;
 int pedra2_x_pos;
 int pedra3_x_pos;
+
+int vida1_x_pos;
+
 
 // Variáveis relacionadas ao Frame
 int frameNumber        = 0; // Frame number geral 
@@ -67,7 +70,7 @@ bool change_superuser = false; // Váriavel que troca para controle do jogo
 bool cenario_direita  = false;
 bool cenario_esquerda = false;
 bool jump = false;
-bool gerar_pedras = false;
+bool gerar_estruturas = false;
 
 // Cores
 float dark_green[3]  = {1.0/255.0  , 50.0/255.0 , 32.0/255.0 };
@@ -88,6 +91,9 @@ void quarado_carro();
 void circulo(int nPonto);
 void circulo_fechado(int nPonto);
 
+void quadrado_pedra();
+void quadrado_vida();
+
 // Colisao
 void checar_colisao();
 
@@ -104,7 +110,7 @@ void init(void)
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity();
 
-  gerar_pedras=true;
+  gerar_estruturas=true;
   
   glOrtho(view_desloc_x_begin, view_desloc_x_end, -10, 10, -10, 10); // Assim vemos o cenário do usuário
 }
@@ -114,12 +120,12 @@ void quadrado()
 /*
  * Unidade básica de um quadrado -> Para formas que não interagem com o usuário
  */
-  glBegin(GL_POLYGON);
-    glVertex3f(-1, -1, 0);
-    glVertex3f(1, -1, 0);
-    glVertex3f(1, 1, 0);
-    glVertex3f(-1, 1, 0);
-  glEnd();
+	glBegin(GL_POLYGON);
+		glVertex3f(-1, -1, 0);
+		glVertex3f(1, -1, 0);
+		glVertex3f(1, 1, 0);
+		glVertex3f(-1, 1, 0);
+	glEnd();
 }
 
 void quadrado_pedra() {
@@ -128,7 +134,16 @@ void quadrado_pedra() {
 		glVertex3f(0.5, -0.5, 0);
 		glVertex3f(0.5, 0.5, 0);
 		glVertex3f(-0.5, 0.5, 0);
-  glEnd();
+  	glEnd();
+}
+
+void quadrado_vida() {
+	glBegin(GL_POLYGON);
+		glVertex3f(-0.5, -0.5, 0);
+		glVertex3f(0.5, -0.5, 0);
+		glVertex3f(0.5, 0.5, 0);
+		glVertex3f(-0.5, 0.5, 0);
+  	glEnd();
 }
 
 void circulo(int nPonto) {
@@ -285,10 +300,11 @@ void display() {
  
   carro();
 
-  if (gerar_pedras) {
+  if (gerar_estruturas) {
 	srand(time(NULL));
 	 // Número entre -80 and 90
 
+	// PEDRAS
     pedra1_x_pos = rand() % 171 - 80;
 	
     do {
@@ -299,11 +315,16 @@ void display() {
     do {
         pedra3_x_pos = rand() % 171 - 80;
     } while (abs(pedra3_x_pos - pedra1_x_pos) < 30 || abs(pedra3_x_pos - pedra2_x_pos) < 30);
+
+
+	// VIDA
+	vida1_x_pos = rand() % 171 - 80;
 	
-	gerar_pedras=false;
+	gerar_estruturas=false;
   }
 
   // PEDRAS -> Tiram uma vida
+ glColor3fv(brown);
   glPushMatrix();
     glTranslated(pedra1_x_pos , -4.0, 0);	
     quadrado_pedra();
@@ -319,6 +340,12 @@ void display() {
     quadrado_pedra();
   glPopMatrix();
   
+  // VIDA	
+  glColor3fv(light_red);
+  glPushMatrix();
+    glTranslated(vida1_x_pos , -1.5, 0);	
+    quadrado_vida();
+  glPopMatrix();
 
   glutSwapBuffers();
 }
@@ -343,6 +370,10 @@ void checar_colisao()
 
 	Point pedra3_inf_esq = {pedra3_x_pos-0.5,-4.0-0.5};
 	Point pedra3_sup_dir = {pedra3_x_pos+0.5,-4.0+0.5};
+
+	// Vida
+	Point vida1_inf_esq = {vida1_x_pos-0.5,-1.5-0.5};
+	Point vida1_sup_dir = {vida1_x_pos+0.5,-1.5+0.5};
 	
 	// printf("\n\nColisão\n\n");
 	// printf("Carro em x: %f ; em y: %f\n", carr_x_pos, carr_y_pos);
@@ -365,7 +396,7 @@ void checar_colisao()
 				perdi_vida_pedra1 = false;
 				printf("Voce tem %d vidas restantes\n", vidas);
 			}
-		}
+	}
 	
 	if (carr_inf_esq.x < pedra2_sup_dir.x &&
 	    carr_sup_dir.x > pedra2_inf_esq.x &&
@@ -377,7 +408,7 @@ void checar_colisao()
 				perdi_vida_pedra2 = false;
 				printf("Voce tem %d vidas restantes\n", vidas);
 			}
-		}
+	}
 
 	if (carr_inf_esq.x < pedra3_sup_dir.x &&
 	    carr_sup_dir.x > pedra3_inf_esq.x &&
@@ -389,7 +420,23 @@ void checar_colisao()
 				perdi_vida_pedra3 = false;
 				printf("Voce tem %d vidas restantes\n", vidas);
 			}
-		}
+	}
+	
+	// COLISÃO COM VIDA -> ADICIONA VIDA
+	if (carr_inf_esq.x < vida1_sup_dir.x &&
+	    carr_sup_dir.x > vida1_inf_esq.x &&
+		carr_inf_esq.y < vida1_sup_dir.y &&
+		carr_sup_dir.y > vida1_inf_esq.y) {
+			//printf("------------------------------------------------------- COLISAO -------------------------------------------------------\n");
+			if(ganhou_vida_vida1) {
+				vidas += 1;
+				perdi_vida_pedra3 = false;
+				printf("Voce ganhou uma vida\n");
+				printf("Voce tem %d vidas restantes\n", vidas);
+				ganhou_vida_vida1 = false;
+			}
+	}
+
 }
 
 void keyboard(unsigned char key, int x, int y) {
@@ -501,10 +548,11 @@ void doFrame(int v) {
 
 		if (view_desloc_x_end >= 100) {
 			
-			gerar_pedras      = true;
+			gerar_estruturas      = true;
 			perdi_vida_pedra1 = true;
 			perdi_vida_pedra2 = true;
 			perdi_vida_pedra3 = true;
+			ganhou_vida_vida1 = true;
 
 
 			printf("-------------------- SUAS VIDAS: %d --------------------\n", vidas);
