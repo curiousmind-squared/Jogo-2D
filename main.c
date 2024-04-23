@@ -450,12 +450,12 @@ void cataventos() {
 }
 
 void desenha_estrela() {
-	int numPoints = 5; // Number of points of the star (5-pointed star)
-    double outerRadius = 8.0, innerRadius = 3.0; // Outer and inner radii
-    double angleIncrement = M_PI / numPoints; // Angle increment
+	int numPoints = 5; 
+    double outerRadius = 8.0, innerRadius = 3.0; 
+    double angleIncrement = M_PI / numPoints; 
 
-    glBegin(GL_TRIANGLE_FAN); // Begin drawing the star
-    glVertex2d(0, 0); // Center point for TRIANGLE_FAN
+    glBegin(GL_TRIANGLE_FAN); 
+    glVertex2d(0, 0); 
 
     for (int i = 0; i <= 2 * numPoints; ++i) {
         double angle = i * angleIncrement;
@@ -472,6 +472,24 @@ void display() {
   glClear(GL_COLOR_BUFFER_BIT);
 
   glMatrixMode (GL_MODELVIEW);
+  
+  if (!permite_pular_infinito) {
+  glColor3fv(light_red);
+  }
+  for (int i=0; i<vidas; i++) {
+	float middle = (view_desloc_x_end + view_desloc_x_begin) / 2;
+	glPushMatrix();
+	glTranslated(middle-7+(i+3), 8, 0);
+	glScaled(0.035, 0.035, 0);
+		glBegin(GL_POLYGON); // Begin drawing the heart shape with filled color
+		for (double t = 0; t < 2 * M_PI; t += 0.001) {
+			double x = 16 * pow(sin(t), 3);
+			double y = 13 * cos(t) - 5 * cos(2*t) - 2 * cos(3*t) - cos(4*t);
+			glVertex2d(x, y);
+		}
+		glEnd();
+	glPopMatrix();
+  }
 
   chao_verde();
 
