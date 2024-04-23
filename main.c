@@ -150,7 +150,7 @@ void quadrado_pedra() {
 }
 
 void quadrado_vida() {
-	glBegin(GL_POLYGON);
+	glBegin(GL_LINE_LOOP);
 		glVertex3f(-0.5, -0.5, 0);
 		glVertex3f(0.5, -0.5, 0);
 		glVertex3f(0.5, 0.5, 0);
@@ -513,8 +513,18 @@ void display() {
   // VIDA	
   glColor3fv(light_red);
   glPushMatrix();
-    glTranslated(vida1_x_pos , -1.5, 0);	
-    quadrado_vida();
+    glTranslated(vida1_x_pos , -1.5, 0);
+	glPushMatrix();
+	glScaled(0.035, 0.035, 0);
+		glBegin(GL_POLYGON); // Begin drawing the heart shape with filled color
+		for (double t = 0; t < 2 * M_PI; t += 0.001) {
+			double x = 16 * pow(sin(t), 3);
+			double y = 13 * cos(t) - 5 * cos(2*t) - 2 * cos(3*t) - cos(4*t);
+			glVertex2d(x, y);
+		}
+		glEnd();
+	glPopMatrix();
+    //quadrado_vida();
   glPopMatrix();
 
   // PODER 
