@@ -30,11 +30,15 @@ float view_desloc_x_begin = -100;
 float view_desloc_x_end   =  -80;
 
 int vidas = 10;
+
 bool perdi_vida_pedra1 = true;
 bool perdi_vida_pedra2 = true;
 bool perdi_vida_pedra3 = true;
+
 bool ganhou_vida_vida1 = true;
 
+bool poder_pular = true;
+bool permite_pular_infinito = false;
 
 
 // Váriaveis relacionas ao carro
@@ -60,6 +64,8 @@ int pedra2_x_pos;
 int pedra3_x_pos;
 
 int vida1_x_pos;
+
+int poder1_x_pos;
 
 
 // Variáveis relacionadas ao Frame
@@ -93,6 +99,7 @@ void circulo_fechado(int nPonto);
 
 void quadrado_pedra();
 void quadrado_vida();
+void quadrado_poder();
 
 // Colisao
 void checar_colisao();
@@ -139,6 +146,15 @@ void quadrado_pedra() {
 }
 
 void quadrado_vida() {
+	glBegin(GL_POLYGON);
+		glVertex3f(-0.5, -0.5, 0);
+		glVertex3f(0.5, -0.5, 0);
+		glVertex3f(0.5, 0.5, 0);
+		glVertex3f(-0.5, 0.5, 0);
+  	glEnd();
+}
+
+void quadrado_poder() {
 	glBegin(GL_POLYGON);
 		glVertex3f(-0.5, -0.5, 0);
 		glVertex3f(0.5, -0.5, 0);
@@ -320,6 +336,12 @@ void display() {
 
 	// VIDA
 	vida1_x_pos = rand() % 171 - 80;
+
+	// PODER
+	poder1_x_pos = rand() % 171 - 80;
+	 do {
+        poder1_x_pos = rand() % 171 - 80;
+    } while (abs(poder1_x_pos - vida1_x_pos) < 30);
 	
 	gerar_estruturas=false;
   }
@@ -346,6 +368,13 @@ void display() {
   glPushMatrix();
     glTranslated(vida1_x_pos , -1.5, 0);	
     quadrado_vida();
+  glPopMatrix();
+
+  // PODER 
+  glColor3fv(light_black);
+  glPushMatrix();
+    glTranslated(poder1_x_pos , -1.5, 0);	
+    quadrado_poder();
   glPopMatrix();
 
   glutSwapBuffers();
@@ -375,6 +404,10 @@ void checar_colisao()
 	// Vida
 	Point vida1_inf_esq = {vida1_x_pos-0.5,-1.5-0.5};
 	Point vida1_sup_dir = {vida1_x_pos+0.5,-1.5+0.5};
+
+	// Poder
+	Point poder1_inf_esq = {poder1_x_pos-0.5,-1.5-0.5};
+	Point poder1_sup_dir = {poder1_x_pos+0.5,-1.5+0.5};
 	
 	// printf("\n\nColisão\n\n");
 	// printf("Carro em x: %f ; em y: %f\n", carr_x_pos, carr_y_pos);
@@ -431,10 +464,22 @@ void checar_colisao()
 			//printf("------------------------------------------------------- COLISAO -------------------------------------------------------\n");
 			if(ganhou_vida_vida1) {
 				vidas += 1;
-				perdi_vida_pedra3 = false;
+				ganhou_vida_vida1 = false;
 				printf("Voce ganhou uma vida\n");
 				printf("Voce tem %d vidas restantes\n", vidas);
-				ganhou_vida_vida1 = false;
+			}
+	}
+
+	// COLISÃO COM PODER -> PULOS INFINITOSSS
+	if (carr_inf_esq.x < poder1_sup_dir.x &&
+	    carr_sup_dir.x > poder1_inf_esq.x &&
+		carr_inf_esq.y < poder1_sup_dir.y &&
+		carr_sup_dir.y > poder1_inf_esq.y) {
+			//printf("------------------------------------------------------- COLISAO -------------------------------------------------------\n");
+			if(poder_pular) {
+				permite_pular_infinito = true;
+				poder_pular = false;
+				printf("Voce ganhou o poder de pular!!\n");
 			}
 	}
 
@@ -573,7 +618,12 @@ void doFrame(int v) {
 		carr_y_vel = 0.2;
 		jump=false;
 	} else if (jump && carr_y_vel != 0) { // Se existir velocidade em y, não permitimos múltiplos pulos (por enquanto, isso irá mudar no futuro)
-		jump=false;
+		if (permite_pular_infinito) {
+			carr_y_vel = 0.2;
+			jump=false;
+		} else {
+			jump=false;
+		}
 	}
 
 	carr_y_pos += carr_y_vel;
