@@ -26,8 +26,8 @@ typedef struct
 
 
 // Váriaveis relacionadas às dimensões da tela e do mundo
-float view_desloc_x_begin = -100;
-float view_desloc_x_end   =  -80;
+float view_desloc_x_begin = -120;
+float view_desloc_x_end   = -100;
 
 int vidas = 3;
 
@@ -250,7 +250,7 @@ void placas_de_asfalto()
   /* 
    * Desenhamos as placas de asfalto ao longo do cenário 
    */
-  int num = 11; // Número de peças de asfalto que teremos
+  int num = 14; // Número de peças de asfalto que teremos
   for (int i=0; i<num; i++) {
      if (i == 0) {
 	asfalto(0);
@@ -607,7 +607,7 @@ void doFrame(int v) {
 		//printf("Tamanho do cenário em x: %f até %f\t", view_desloc_x_begin, view_desloc_x_end);
 
 
-		if (view_desloc_x_end >= 100) {
+		if (view_desloc_x_end >= 120) {
 			
 			gerar_estruturas      = true;
 			perdi_vida_pedra1 = true;
@@ -619,8 +619,8 @@ void doFrame(int v) {
 
 			printf("-------------------- SUAS VIDAS: %d --------------------\n", vidas);
 			//printf("Passamos do limite de visualização do usuário, devemos dar a ideia de voltar ao começo para termos ilusão de cenário infinito\n");
-			view_desloc_x_begin = -100;
-			view_desloc_x_end   =  -80;
+			view_desloc_x_begin = -120;
+			view_desloc_x_end   = -100;
 			glOrtho(view_desloc_x_begin, view_desloc_x_end, -10, 10, -10, 10);			
 			
 		} else {
