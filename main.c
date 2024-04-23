@@ -39,6 +39,8 @@ bool ganhou_vida_vida1 = true;
 
 bool poder_pular = true;
 bool permite_pular_infinito = false;
+time_t end_count_poder;
+time_t begin_count_poder;
 
 
 // Váriaveis relacionas ao carro
@@ -480,6 +482,7 @@ void checar_colisao()
 				permite_pular_infinito = true;
 				poder_pular = false;
 				printf("Voce ganhou o poder de pular!!\n");
+				begin_count_poder = time(NULL);
 			}
 	}
 
@@ -599,6 +602,7 @@ void doFrame(int v) {
 			perdi_vida_pedra2 = true;
 			perdi_vida_pedra3 = true;
 			ganhou_vida_vida1 = true;
+			poder_pular = true;
 
 
 			printf("-------------------- SUAS VIDAS: %d --------------------\n", vidas);
@@ -614,10 +618,17 @@ void doFrame(int v) {
 	
 	checar_colisao();
 
+	end_count_poder = time(NULL);
+	if (abs(end_count_poder - begin_count_poder) >= 4) {
+		permite_pular_infinito = false;
+	} else {
+       	printf("Faltam %d\n para seu poder acabar!\n", 3-abs(end_count_poder - begin_count_poder));
+	}
+
 	if (jump && carr_y_vel == 0) { 
 		carr_y_vel = 0.2;
 		jump=false;
-	} else if (jump && carr_y_vel != 0) { // Se existir velocidade em y, não permitimos múltiplos pulos (por enquanto, isso irá mudar no futuro)
+	} else if (jump && carr_y_vel != 0 && carr_y_pos <= 6.0) { 
 		if (permite_pular_infinito) {
 			carr_y_vel = 0.2;
 			jump=false;
