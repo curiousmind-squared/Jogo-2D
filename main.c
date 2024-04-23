@@ -260,6 +260,29 @@ void placas_de_asfalto()
   }
 }
 
+void montanha(int desloc_x) {
+
+	glColor3fv(dark_green);
+	glBegin(GL_POLYGON);
+		glVertex3f(desloc_x-10,0, 0);
+		glVertex3f(desloc_x, 5.0, 0);
+		glVertex3f(desloc_x+10,0, 0);
+	glEnd();
+
+}
+
+void placas_de_montanha() {
+ 	int num = 14; // Número de peças de asfalto que teremos
+	for (int i=0; i<num; i++) {
+		if (i == 0) {
+			montanha(0);
+		} else {
+			montanha(i*10);
+			montanha(i*10*-1);
+		}
+	}
+}
+
 void carro() 
 {
 	float car_x_pos = (view_desloc_x_end + view_desloc_x_begin+desloc) / 2; // Carro no meio da tela
@@ -353,17 +376,89 @@ void posicao_sol() {
 	glPopMatrix();
 }
 
+void helice() {
+	  glBegin(GL_POLYGON);
+	    glVertex3f(0, 0, 0);
+	    glVertex3f(0.3, 0.2, 0);
+	    glVertex3f(1, 0, 0);
+	    glVertex3f(0.3, -0.2, 0);
+	  glEnd();
+}
+
+void catavento() {
+
+		// Retangulo
+		glPushMatrix();
+			glTranslated(0, 0.5, 0);
+			glScaled(0.1, 0.5, 1);
+			quadrado();
+		glPopMatrix();
+
+		glColor3fv(light_red);	
+
+		// pá mais à direita
+		glPushMatrix();
+			glTranslated(0, 1, 0);
+			glScaled(0.5, 0.5, 1);
+			glRotated((float)frameNumber*2.0, 0, 0, 1);
+			helice();
+		glPopMatrix();
+
+		// pá ao centro
+		glPushMatrix();
+			glTranslated(0, 1, 0);
+			glRotated(120+(float)frameNumber*2.0, 0, 0, 1);
+			glScaled(0.5, 0.5, 1);
+			helice();
+		glPopMatrix();
+
+		// pá mais à esquerda
+		glPushMatrix();
+			glTranslated(0, 1, 0);
+			glRotated(240+(float)frameNumber*2.0, 0, 0, 1);
+			glScaled(0.5, 0.5, 1);
+			helice();
+		glPopMatrix();
+
+}
+
+void catavento_desenha(int desloc_x) {
+	glColor3f(0.4, 0.4, 0.4);
+	glPushMatrix();
+		glTranslated(desloc_x, 2.5, 0);
+		glScaled(2, 2,0);
+		catavento();
+	glPopMatrix();
+
+	
+}
+
+void cataventos() {
+	int num = 14; // Número de peças de asfalto que teremos
+	for (int i=0; i<num; i+=2) {
+		if (i == 0) {
+			catavento_desenha(0);
+		} else {
+			catavento_desenha(i*10);
+			catavento_desenha(i*10*-1);
+		}
+	}
+
+}
+
 void display() {
 
   glClear(GL_COLOR_BUFFER_BIT);
 
   glMatrixMode (GL_MODELVIEW);
 
-  
-
   chao_verde();
 
   posicao_sol();
+
+  placas_de_montanha();
+
+  cataventos();
 
   placas_de_asfalto();
 
