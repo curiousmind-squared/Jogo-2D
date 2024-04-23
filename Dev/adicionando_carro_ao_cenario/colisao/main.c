@@ -104,7 +104,7 @@ void quadrado()
 
 void quadrado_carro() 
 {
- glBegin(GL_POLYGON);
+ glBegin(GL_LINE_LOOP);
 	glVertex3f(quad_carro.sup_esq.x, quad_carro.sup_esq.y, 0);
 	glVertex3f(quad_carro.sup_dir.x, quad_carro.sup_dir.y, 0);
 	glVertex3f(quad_carro.inf_dir.x, quad_carro.inf_dir.y, 0);

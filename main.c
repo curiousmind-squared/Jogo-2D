@@ -1,9 +1,14 @@
 // Para rodar pela linha de comando: gcc nome_do_arquivo.c -lglut -lGLU -lGL -lm
 #include <GL/glut.h>
 #include <stdbool.h>
+#include <math.h>
+#include <time.h>
 
 // Para testes
 #include <stdio.h>
+
+#define DOUBLE_PI 2*M_PI
+
 
 typedef struct 
 {
@@ -21,8 +26,15 @@ typedef struct
 
 
 // Váriaveis relacionadas às dimensões da tela e do mundo
-float view_desloc_x_begin = -10;
-float view_desloc_x_end   =  10;
+float view_desloc_x_begin = -100;
+float view_desloc_x_end   =  -80;
+
+int vidas = 10;
+bool perdi_vida_pedra1 = true;
+bool perdi_vida_pedra2 = true;
+bool perdi_vida_pedra3 = true;
+
+
 
 // Váriaveis relacionas ao carro
 
@@ -33,25 +45,29 @@ Point carr_inf_esq = {-1, -1};
 // Por isso não colocamos elas aqui em baixo (Fora que o C também não deixa)
 Quadrado quad_carro = {{-1, 1}, {1, 1}, {1, -1}, {-1, -1}};
 
+int circle_points = 100;
+
 float carr_scale_x;
 float carr_scale_y;
-//float carr_translate_x; // Não precisa pois as vars de baixo fazem o serviço
-//float carr_translate_y; 
 float carr_y_pos = -4.0;
 float carr_y_vel = 0.0f;
 float gravidade = -0.0070;
 
-float pedra_x_pos = 10.0;
-float pedra_y_pos = -4.0;
+Point pedras[5];
+
+int pedra1_x_pos;
+int pedra2_x_pos;
+int pedra3_x_pos;
 
 // Variáveis relacionadas ao Frame
 int frameNumber        = 0; // Frame number geral 
 
 // Variáveis booleanas de sistema
-bool change_superuser = true; // Váriavel que troca para controle do jogo
+bool change_superuser = false; // Váriavel que troca para controle do jogo
 bool cenario_direita  = false;
 bool cenario_esquerda = false;
 bool jump = false;
+bool gerar_pedras = false;
 
 // Cores
 float dark_green[3]  = {1.0/255.0  , 50.0/255.0 , 32.0/255.0 };
@@ -63,11 +79,16 @@ float white[3]       = {1.0        , 1.0        , 1.0        };
 
 // Funções de desenho de formas
 void quadrado();
-void quarado_carro();
 void asfalto(int desloc_x);
 void placas_de_asfalto();
-void carro();
 
+
+void carro();
+void quarado_carro();
+void circulo(int nPonto);
+void circulo_fechado(int nPonto);
+
+// Colisao
 void checar_colisao();
 
 // Funções do OpenGl
@@ -76,15 +97,14 @@ void display(void);
 void doFrame(int v);
 void keyboard(unsigned char key, int x, int y);
 
-// Constantes do quadrado
-
-
 void init(void)
 {
   glClearColor(1.0, 1.0, 1.0, 1.0);
 
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity();
+
+  gerar_pedras=true;
   
   glOrtho(view_desloc_x_begin, view_desloc_x_end, -10, 10, -10, 10); // Assim vemos o cenário do usuário
 }
@@ -102,9 +122,63 @@ void quadrado()
   glEnd();
 }
 
+void quadrado_pedra() {
+	glBegin(GL_POLYGON);
+		glVertex3f(-0.5, -0.5, 0);
+		glVertex3f(0.5, -0.5, 0);
+		glVertex3f(0.5, 0.5, 0);
+		glVertex3f(-0.5, 0.5, 0);
+  glEnd();
+}
+
+void circulo(int nPonto) {
+	int raio = 1;
+	glBegin(GL_LINE_LOOP);
+		for (int i=0; i<nPonto;i++) {
+			double angle = DOUBLE_PI * i / nPonto;
+			glVertex3f(raio * cos(angle),
+				   raio * sin(angle),
+			   	   0);
+		}
+	glEnd();
+}
+
+void circulo_fechado(int nPonto) {
+	int raio = 1;
+	glBegin(GL_POLYGON);
+		for (int i=0; i<nPonto;i++) {
+			double angle = DOUBLE_PI * i / nPonto;
+			glVertex3f(raio * cos(angle),
+				   raio * sin(angle),
+			   	   0);
+		}
+	glEnd();
+}
+
+void roda() {
+	
+	int num_of_lines_wheel = 12;
+
+	glColor3f(0.4, 0.4, 0.4);
+	circulo_fechado(circle_points);
+
+	glColor3f(0, 0, 0);
+	glLineWidth(3);
+	circulo(circle_points);
+
+	glBegin(GL_LINES);
+	for (int i=0; i<num_of_lines_wheel; i++) {
+		double angle = DOUBLE_PI * i / num_of_lines_wheel;
+		glVertex3f(0, 0, 0);
+		glVertex3f(cos(angle),sin(angle), 0);
+	}
+	glEnd();
+}
+
+
 void quadrado_carro() 
 {
- glBegin(GL_POLYGON);
+ glBegin(GL_LINE_LOOP);
 	glVertex3f(quad_carro.sup_esq.x, quad_carro.sup_esq.y, 0);
 	glVertex3f(quad_carro.sup_dir.x, quad_carro.sup_dir.y, 0);
 	glVertex3f(quad_carro.inf_dir.x, quad_carro.inf_dir.y, 0);
@@ -162,7 +236,42 @@ void carro()
 	glPushMatrix();
 	  glTranslated(car_x_pos, carr_y_pos, 0);
 	  glScaled(carr_scale_x, carr_scale_y, 1);
-	  quadrado_carro();
+	  
+	    // roda da frente
+		glPushMatrix();
+			glTranslated(0.75, -0.6, 0);
+			glScaled(0.25, 0.25, 1);
+			glRotated(frameNumber*-1, 0, 0, 1);
+			roda();
+		glPopMatrix();
+
+		// roda de trás
+		glPushMatrix();
+			glTranslated(-0.75, -0.6, 0);
+			glScaled(0.25, 0.25, 1);
+			glRotated(frameNumber*-1, 0, 0, 1);
+			roda();
+		glPopMatrix();
+
+		// parte maior do carro
+		glColor3f(1, 0, 0);
+		glPushMatrix();
+			glScaled(1.0, 0.5, 1);
+			quadrado();
+		glPopMatrix();
+
+		// parte menor do carro
+		glColor3f(1, 0, 0);
+		glPushMatrix();
+			glTranslated(-0.5, 0.75, 0);
+			glScaled(0.5, 0.25, 1);
+			quadrado();
+		glPopMatrix();
+
+		
+		//quadrado_carro();
+	  
+
 	glPopMatrix();
 }
 
@@ -176,11 +285,41 @@ void display() {
  
   carro();
 
+  if (gerar_pedras) {
+	srand(time(NULL));
+	 // Número entre -80 and 90
+
+    pedra1_x_pos = rand() % 171 - 80;
+	
+    do {
+        pedra2_x_pos = rand() % 171 - 80;
+    } while (abs(pedra2_x_pos - pedra1_x_pos) < 30);
+
+
+    do {
+        pedra3_x_pos = rand() % 171 - 80;
+    } while (abs(pedra3_x_pos - pedra1_x_pos) < 30 || abs(pedra3_x_pos - pedra2_x_pos) < 30);
+	
+	gerar_pedras=false;
+  }
+
+  // PEDRAS -> Tiram uma vida
   glPushMatrix();
-    glTranslated(pedra_x_pos , pedra_y_pos, 0);	
-    quadrado();
+    glTranslated(pedra1_x_pos , -4.0, 0);	
+    quadrado_pedra();
   glPopMatrix();
   
+  glPushMatrix();
+    glTranslated(pedra2_x_pos , -4.0, 0);	
+    quadrado_pedra();
+  glPopMatrix();
+  
+  glPushMatrix();
+    glTranslated(pedra3_x_pos , -4.0, 0);	
+    quadrado_pedra();
+  glPopMatrix();
+  
+
   glutSwapBuffers();
 }
 
@@ -195,23 +334,61 @@ void checar_colisao()
 	carr_sup_dir.x = carr_x_pos + carr_scale_x;
 	carr_sup_dir.y = carr_y_pos + carr_scale_y;
 
-	Point pedra_inf_esq = {pedra_x_pos-1,pedra_y_pos-1};
-	Point pedra_sup_dir = {pedra_x_pos+1,pedra_y_pos+1};
-	
-	printf("\n\nColisão\n\n");
-	printf("Carro em x: %f ; em y: %f\n", carr_x_pos, carr_y_pos);
-	printf("Ponto inferior esquerdo do carro:  em x: %f ; em y: %f\n", carr_inf_esq.x, carr_inf_esq.y);
-   	printf("Ponto superior direito do carro :  em x: %f ; em y: %f\n", carr_sup_dir.x, carr_sup_dir.y);
-    printf("\n");
-	printf("Pedra em x: %f ; em y: %f\n", pedra_x_pos, pedra_y_pos);
-	printf("Ponto inferior esquerdo da pedra:  em x: %f ; em y: %f\n", pedra_inf_esq.x, pedra_inf_esq.y);
-   	printf("Ponto superior direito da pedra :  em x: %f ; em y: %f\n", pedra_sup_dir.x, pedra_sup_dir.y);
+	// Pedras
+	Point pedra1_inf_esq = {pedra1_x_pos-0.5,-4.0-0.5};
+	Point pedra1_sup_dir = {pedra1_x_pos+0.5,-4.0+0.5};
 
-	if (carr_inf_esq.x < pedra_sup_dir.x &&
-	    carr_sup_dir.x > pedra_inf_esq.x &&
-		carr_inf_esq.y < pedra_sup_dir.y &&
-		carr_sup_dir.y > pedra_inf_esq.y) {
-			printf("------------------------------------------------------- COLISAO -------------------------------------------------------\n");
+	Point pedra2_inf_esq = {pedra2_x_pos-0.5,-4.0-0.5};
+	Point pedra2_sup_dir = {pedra2_x_pos+0.5,-4.0+0.5};
+
+	Point pedra3_inf_esq = {pedra3_x_pos-0.5,-4.0-0.5};
+	Point pedra3_sup_dir = {pedra3_x_pos+0.5,-4.0+0.5};
+	
+	// printf("\n\nColisão\n\n");
+	// printf("Carro em x: %f ; em y: %f\n", carr_x_pos, carr_y_pos);
+	// printf("Ponto inferior esquerdo do carro:  em x: %f ; em y: %f\n", carr_inf_esq.x, carr_inf_esq.y);
+   	// printf("Ponto superior direito do carro :  em x: %f ; em y: %f\n", carr_sup_dir.x, carr_sup_dir.y);
+    // printf("\n");
+	// printf("Pedra em x: %f ; em y: %f\n", pedra_x_pos, pedra_y_pos);
+	// printf("Ponto inferior esquerdo da pedra:  em x: %f ; em y: %f\n", pedra_inf_esq.x, pedra_inf_esq.y);
+   	// printf("Ponto superior direito da pedra :  em x: %f ; em y: %f\n", pedra_sup_dir.x, pedra_sup_dir.y);
+
+
+	// COLISÃO COM PEDRAS -> Tiram vidas
+	if (carr_inf_esq.x < pedra1_sup_dir.x &&
+	    carr_sup_dir.x > pedra1_inf_esq.x &&
+		carr_inf_esq.y < pedra1_sup_dir.y &&
+		carr_sup_dir.y > pedra1_inf_esq.y) {
+			//printf("------------------------------------------------------- COLISAO -------------------------------------------------------\n");
+			if (perdi_vida_pedra1) {
+				vidas -= 1;
+				perdi_vida_pedra1 = false;
+				printf("Voce tem %d vidas restantes\n", vidas);
+			}
+		}
+	
+	if (carr_inf_esq.x < pedra2_sup_dir.x &&
+	    carr_sup_dir.x > pedra2_inf_esq.x &&
+		carr_inf_esq.y < pedra2_sup_dir.y &&
+		carr_sup_dir.y > pedra2_inf_esq.y) {
+			//printf("------------------------------------------------------- COLISAO -------------------------------------------------------\n");
+			if(perdi_vida_pedra2) {
+				vidas -= 1;
+				perdi_vida_pedra2 = false;
+				printf("Voce tem %d vidas restantes\n", vidas);
+			}
+		}
+
+	if (carr_inf_esq.x < pedra3_sup_dir.x &&
+	    carr_sup_dir.x > pedra3_inf_esq.x &&
+		carr_inf_esq.y < pedra3_sup_dir.y &&
+		carr_sup_dir.y > pedra3_inf_esq.y) {
+			//printf("------------------------------------------------------- COLISAO -------------------------------------------------------\n");
+			if(perdi_vida_pedra3) {
+				vidas -= 1;
+				perdi_vida_pedra3 = false;
+				printf("Voce tem %d vidas restantes\n", vidas);
+			}
 		}
 }
 
@@ -323,7 +500,15 @@ void doFrame(int v) {
 
 
 		if (view_desloc_x_end >= 100) {
-			printf("Passamos do limite de visualização do usuário, devemos dar a ideia de voltar ao começo para termos ilusão de cenário infinito\n");
+			
+			gerar_pedras      = true;
+			perdi_vida_pedra1 = true;
+			perdi_vida_pedra2 = true;
+			perdi_vida_pedra3 = true;
+
+
+			printf("-------------------- SUAS VIDAS: %d --------------------\n", vidas);
+			//printf("Passamos do limite de visualização do usuário, devemos dar a ideia de voltar ao começo para termos ilusão de cenário infinito\n");
 			view_desloc_x_begin = -100;
 			view_desloc_x_end   =  -80;
 			glOrtho(view_desloc_x_begin, view_desloc_x_end, -10, 10, -10, 10);			
