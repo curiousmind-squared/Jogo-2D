@@ -29,7 +29,7 @@ typedef struct
 float view_desloc_x_begin = -100;
 float view_desloc_x_end   =  -80;
 
-int vidas = 10;
+int vidas = 3;
 
 bool perdi_vida_pedra1 = true;
 bool perdi_vida_pedra2 = true;
@@ -493,10 +493,14 @@ void checar_colisao()
 void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 		case 'd':
-			desloc += 1.0;
+			if (!(desloc >= 17.0)) {
+				desloc += 1.0;
+			}
 			break; 
 		case 'a':
-			desloc -= 1.0;
+			if (!(desloc <= -17.0)){
+				desloc -= 1.0;
+			}
 			break;
 		case 'w':
 			jump=true;
